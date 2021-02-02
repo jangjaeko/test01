@@ -41,9 +41,9 @@ app.post("/api/users/register",(req, res)=>{
 
 
 
-app.post('/login',(req,res) =>{
+app.post('/api/users/login',(req,res) =>{
     //step1 요청된 이메일을 데이터베이스에서 있는지 찾는다.
-    User.findOne({emil : req.body.email}, (err, user)=>{
+    User.findOne({email : req.body.email}, (err, user)=>{
         if(!user){
             return res.json({
                 loginSuccess : false,
@@ -52,16 +52,17 @@ app.post('/login',(req,res) =>{
         }
         //step2 요청된 이메일이 데이터베이스에 있다면 비밀 번호가 일치하는지 확인 
         user.comparePassword(req.body.password , (err, isMatch)=>{
-            if(!isMatch) return res.json({loginSuccess: false , message :"비밀번호가 틀렸습니다."})
-       
+            if(!isMatch) 
+            return res.json({loginSuccess: false , message :"비밀번호가 틀렸습니다."})
+            
             
             //step3 비밀번호가 일치하면 토큰을 생성한다.
             user.generateToken((err, user)=>{
                 if(err) return res.status(400).send(err);
                 //token 을 저장한다 . 어디에? 쿠케에, 로컬 스토리지, 세션 
-                res.cookie("x_auth",user.token)
+                res.cookie("x_auth", user.token)
                 .status(200)
-                .json({loginSuccess: true, userId: user.id})
+                .json({loginSuccess: true, userId: user._id})
             })
         })
     })
@@ -74,7 +75,7 @@ app.get('/api/users/auth',auth,(req,res)=>{
     //여기까지 미들웨어를 통과해 왔다는 얘기는 authentication이 true 라는 말.
     res.status(200).json({
         _id: req.user._id,
-       isAdmin: req.user.role === 0? false : true ,
+       isAdmin: req.user.role === 0 ? false : true ,
         //role == 1  common user / role != 0 admin
         isAuth : true,
         email : req.user.email,
