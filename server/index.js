@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
-const port = 3000
-const {User} = require("./models/User");
+const port = 5000;
+const {User} = require('./models/User');
 const bodyParser = require('body-parser');
 const config = require('./config/key');
 const cookieParser = require( 'cookie-parser');
